@@ -638,7 +638,7 @@ def check_service_type_fraud(
                 "message": (
                     f"GPU training packages detected but '{required_svc}' is not in your declared services.\n"
                     f"  Detected: {', '.join(enforcement['gpu_packages'])}\n"
-                    f"  These packages run on GPU compute billed at $0.80/GPU hour.\n"
+                    f"  These packages run on GPU compute billed at a dynamic hourly rate based on the GPU tier.\n"
                     f"  You cannot deploy them under 'compute' (flat $10/month subscription).\n"
                     f"  Use: sovergrid train   — for GPU training jobs\n"
                     f"  Or add 'ml_training' to your service_types in sovergrid.yaml."

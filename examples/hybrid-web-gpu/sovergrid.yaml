@@ -1,0 +1,29 @@
+app_name: "ig-clone-ai"
+version: "1.0.0"
+
+# HYBRID DEPLOYMENT: Web App + ML GPU Worker
+# This allows the project to pass the Anti-Fraud scanner because
+# it explicitly declares both the flat compute and pay-per-use GPU services.
+
+services:
+  # 1. The Web Server (Next.js/FastAPI)
+  # Billed at the standard flat $10/month subscription.
+  - type: compute
+    provider: akash
+    resources:
+      cpu: 1
+      memory: "1GB"
+      port: 3000
+
+  # 2. The AI Worker (PyTorch / Stable Diffusion)
+  # Billed dynamically by the hour from the SoverGridVault.
+  - type: ml_training
+    provider: akash
+    resources:
+      gpu: "NVIDIA_A100"   # The new dynamic pricing engine will quote this based on tier
+      gpu_count: 1
+      memory: "32GB"
+
+env:
+  NODE_ENV: "production"
+  # Backend will automatically inject these at runtime

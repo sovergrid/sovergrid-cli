@@ -12,7 +12,7 @@ Traditional cloud platforms (AWS, Railway, Vercel) can shut down your server, sp
 
 **For Web2 Developers:** You don't need to learn blockchain. Write your normal Python or Node.js app, and SoverGrid handles the rest. It auto-generates Dockerfiles, calculates costs, and deploys to the cheapest available decentralized network.
 
-**For Web3 Builders:** Payments are in USDC and verified on-chain. Every transaction is transparent. Pricing is per service — deploying a web app costs $5 upfront and $10/month. Training an AI model costs $0.80 per GPU hour. You only pay for what you actually use, pulled directly from your own wallet. SoverGrid never holds your funds.
+**For Web3 Builders:** Payments are in USDC and verified on-chain. Every transaction is transparent. Pricing is per service — deploying a web app costs $5 upfront and $10/month. Training an AI model is billed dynamically by the hour depending on the GPU tier. You only pay for what you actually use, pulled directly from your own wallet. SoverGrid never holds your funds.
 
 ## Current Status (Beta Phase 1 - Live Demo)
 
@@ -109,7 +109,7 @@ Once deployed, you will receive a contract address. Add it to your `sovergrid.ya
 | `sovergrid faucet` | Mint $1,000 in free testnet USDC to test the CLI |
 | `sovergrid init` | Scaffold a new project (generates sovergrid.yaml and Dockerfile) |
 | `sovergrid dev` | Test your deployment locally via Docker for free |
-| `sovergrid deploy` | Deploy your app — fee depends on services selected (compute: $5 upfront, AI training: $0.80/GPU hr) |
+| `sovergrid deploy` | Deploy your app — fee depends on services selected (compute: $5 upfront, AI training: dynamic hourly rate) |
 | `sovergrid token` | Deploy your own ERC-20 token to the blockchain |
 | `sovergrid status` | Check the status of your active deployment |
 | `sovergrid info` | Display SoverGrid version and current config |
@@ -312,11 +312,11 @@ sovergrid cdn deploy ./dist
 
 | Fee | Amount | What it covers |
 |-----|--------|---------------|
-| Per GPU hour | **$0.80 USDC/hr** | Decentralized GPU compute for model training |
+| Per GPU hour | **Dynamic** (e.g. $0.65 for T4, $5.20 for H100) | Decentralized GPU compute for model training |
 
 **This is the most important one to understand.** AI training costs are variable. Someone can use 1 GPU hour or 10,000 GPU hours in a month. A flat subscription would mean SoverGrid either overcharges light users or loses money on heavy users.
 
-Instead, the developer pre-funds their SoverGridVault with USDC. Every GPU hour consumed pulls $0.80 from their vault. When the vault runs low, they top it up. When the vault is empty, training pauses automatically.
+Instead, the developer pre-funds their SoverGridVault with USDC. Every GPU hour consumed pulls the dynamic hourly rate from their vault. When the vault runs low, they top it up. When the vault is empty, training pauses automatically.
 
 **You never front GPU costs.** The money is always in the developer's vault, not your pocket.
 
@@ -327,11 +327,11 @@ Instead, the developer pre-funds their SoverGridVault with USDC. Every GPU hour 
 - AWS SageMaker: $3.06–$32.77/hr
 - Google Cloud GPU: $2.48–$24.48/hr
 - Lambda Labs: $0.80–$8.00/hr
-- **SoverGrid: $0.80/hr** — powered by decentralized GPU networks
+- **SoverGrid: Dynamic** (e.g. $0.65/hr for T4) — powered by decentralized GPU networks
 
 ```bash
 sovergrid train --model ./train.py --gpu A100 --hours 10
-# Estimated cost: 10 × $0.80 = $8.00 USDC from your vault
+# Estimated cost: Quoted dynamically based on GPU tier (e.g., $8.00 USDC)
 ```
 
 ---
@@ -364,7 +364,7 @@ sovergrid token deploy   --name "MyToken"   --symbol "MTK"   --supply 1000000   
 | Storage (Filecoin) | $2 | $5–30/month | Tiered subscription |
 | Database (Kwil) | $3 | $8/month | Subscription |
 | CDN | $2 | $5/month | Subscription |
-| AI Training (GPU) | None | $0.80/GPU hour | Pay-per-use from vault |
+| AI Training (GPU) | None | Dynamic (by tier) | Pay-per-use from vault |
 | Token Deployment | $20 | None | One-time |
 
 ## Cost Transparency
@@ -377,7 +377,7 @@ SoverGrid publishes its infrastructure costs openly so you know exactly where yo
 | Storage (10GB) | $5/mo | ~$0.40/mo | ~$4.60/mo (92%) |
 | Database | $8/mo | ~$1.00/mo | ~$7.00/mo (87%) |
 | CDN | $5/mo | ~$0.50/mo | ~$4.50/mo (90%) |
-| AI Training | $0.80/hr | ~$0.30/hr | ~$0.50/hr (62%) |
+| AI Training | Dynamic (e.g. $0.65/hr) | Live Provider Cost | +30% Markup |
 | Token Deploy | $20 (once) | ~$3.00 gas | ~$17.00 (85%) |
 
 Traditional cloud providers (AWS, GCP, Azure) charge 300–1000% markups on compute while hiding their infrastructure costs. SoverGrid uses cheaper decentralized infrastructure and shows you the numbers openly.
