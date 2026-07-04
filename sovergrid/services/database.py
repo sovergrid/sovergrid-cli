@@ -35,11 +35,13 @@ DB_PROVIDERS = {
         "type": "SQL",
         "price_per_month": 2.50,
         "description": "Decentralized SQL database with ACID compliance",
+        "gateway": "gw.kwil.com",
     },
     "tableland": {
         "type": "SQL",
         "price_per_month": 2.00,
         "description": "Decentralized on-chain SQL database (tables are ERC721 NFTs)",
+        "gateway": "testnet.tableland.network",
     },
 }
 
@@ -122,7 +124,7 @@ class DatabaseService(BaseService):
         # Generate the connection string based on the active provider
         generated_connection_string = (
             f"postgresql://admin:sovergrid_secure_pwd@{provider_info['gateway']}"
-            f":{random.randint(5432, 5999)}/{db_name}"
+            f":{random.randint(5432, 5999)}/{self.db_name}"
         )
         
         # In a real environment, wait for node provisioning confirmation
@@ -134,13 +136,14 @@ class DatabaseService(BaseService):
         )
 
         return ServiceResult(
+            service_name="database",
             status="success",
             provider=self.provider,
-            cost_usd=cost_usd,
+            cost_usd=self.estimate_cost(),
             endpoint=generated_connection_string,
             metadata={
-                "db_name": db_name,
-                "db_type": db_type,
+                "db_name": self.db_name,
+                "db_type": provider_info["type"],
                 "connection_string": generated_connection_string,
             },
         )
