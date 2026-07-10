@@ -12,7 +12,7 @@ Traditional cloud platforms (AWS, Railway, Vercel) can shut down your server, sp
 
 **For Web2 Developers:** You don't need to learn blockchain. Write your normal Python or Node.js app, and SoverGrid handles the rest. It auto-generates Dockerfiles, calculates costs, and deploys to the cheapest available decentralized network.
 
-**For Web3 Builders:** Payments are in USDC and verified on-chain. Every transaction is transparent. Pricing is per service — deploying a web app costs $5 upfront and $10/month. Training an AI model is billed dynamically by the hour depending on the GPU tier. You only pay for what you actually use, pulled directly from your own wallet. SoverGrid never holds your funds.
+**For Web3 Builders:** Payments are verified on-chain. Every transaction is transparent. SoverGrid relies on a single, uncompromising pricing rule across all services: **Customer Pays = Provider Cost (100% passthrough) + $5 SoverGrid Fee**. You only pay for the raw infrastructure cost plus our flat fee. No hidden markups. Static sites even have the $5 fee waived. SoverGrid never holds your funds.
 
 ## Current Status (Beta Phase 1 - Live Demo)
 
@@ -21,8 +21,9 @@ SoverGrid is currently in **Beta Phase 1**, designed specifically as a working p
 > **Built on Akash Network.** SoverGrid's primary compute layer runs on [Akash Network](https://akash.network) — the leading decentralized cloud marketplace. Akash enables permissionless, censorship-resistant deployments at 60-85% lower cost than traditional cloud providers. SoverGrid is an active Akash ecosystem builder.
 
 **What is currently working 100% (The Financial Plumbing):**
-- **Per-Service Pricing Engine:** Each service (compute, storage, database, CDN, AI training, token deployment) has its own fee and billing model. Developers pay only for what they use — no flat fees that overprice simple workloads or underprice expensive ones like AI training.
+- **Transparent Pricing Engine:** Developers pay exactly the raw provider cost plus a flat $5 SoverGrid fee for their deployments. No hidden markup percentages, no setup fees, and static sites have the $5 fee waived completely.
 - **Web3 Payment Routing:** When a developer runs `sovergrid deploy`, the CLI securely connects to the blockchain, signs a transaction with their private key, and pays using USDC from their own wallet.
+- **Fiat On-Ramping:** Don't have crypto? Developers can fund their workspace directly with a credit card via our Ramp integration. The deposit is converted to USDC behind the scenes and split automatically—routing the raw infrastructure cost to the provider and the $5 fee to the SoverGrid treasury.
 - **Smart Contract Automated Routing:** The Payment Router smart contract automatically directs the infrastructure cost to the provider and routes the SoverGrid service margin to the protocol treasury.
 - **Subscription Billing Engine:** Monthly compute subscriptions are automatically collected on the billing date via `transferFrom` on-chain — no manual invoices, no failed payments going unnoticed.
 - **Orchestration Logic:** The CLI parses `sovergrid.yaml`, calculates the exact cost for the requested services, and calls the SoverGrid backend API.
@@ -110,6 +111,7 @@ Once deployed, you will receive a contract address. Add it to your `sovergrid.ya
 | `sovergrid init` | Scaffold a new project (generates sovergrid.yaml and Dockerfile) |
 | `sovergrid dev` | Test your deployment locally via Docker for free |
 | `sovergrid deploy` | Deploy your app — fee depends on services selected (compute: $5 upfront, AI training: dynamic hourly rate) |
+| `sovergrid agent create-token` | Generate a scoped, limited token for AI agents (Cursor, Claude Code) |
 | `sovergrid token` | Deploy your own ERC-20 token to the blockchain |
 | `sovergrid status` | Check the status of your active deployment |
 | `sovergrid info` | Display SoverGrid version and current config |

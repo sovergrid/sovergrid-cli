@@ -131,9 +131,8 @@ def deploy(config):
             f"  {Colors.CYAN}sovergrid env set KEY=value{Colors.RESET}\n\n"
             f"  Or add them to the 'env:' block in your sovergrid.yaml and re-run.\n"
         )
-        if not click.confirm("  Continue deployment anyway?", default=False):
-            log.info("Deployment cancelled. Set your env vars and try again.")
-            return
+        log.error(f"  {Colors.RED}{Colors.BOLD}DEPLOYMENT BLOCKED:{Colors.RESET} {Colors.RED}Pre-flight checks failed. No deployment fee will be charged.{Colors.RESET}")
+        return
 
     # ── Anti-Fraud: Service Type Enforcement ─────────────────────────────────────
     # Cross-check the declared service types in sovergrid.yaml against what packages
@@ -1104,5 +1103,52 @@ def main():
     cli()
 
 
+@cli.group()
+def agent():
+    """
+    Manage AI Agent access to SoverGrid.
+    """
+    pass
+
+@agent.command("create-token")
+@click.option("--scope", default="deploy_only", help="Scope of the token.")
+@click.option("--limit", default=20.0, type=float, help="Max monthly spend (USDC) this agent can cause.")
+def create_agent_token(scope, limit):
+    """
+    Create a scoped, limited-permission token for AI agents (Claude Code, Cursor).
+    """
+    if not CREDENTIALS_FILE.exists():
+        log.error(f"{Colors.RED}Not authenticated. Run 'sovergrid login' first.{Colors.RESET}")
+        raise SystemExit(1)
+
+    with open(CREDENTIALS_FILE, "r") as f:
+        creds = json.load(f)
+    token = creds.get("access_token")
+
+    api_url = os.environ.get("SOVERGRID_API_URL", DEFAULT_API_URL)
+    url = f"{api_url}/agent-token"
+    
+    log.info(f"Creating agent token with scope '{scope}' and limit ${limit}...")
+    
+    try:
+        response = httpx.post(
+            url,
+            json={"scope": scope, "limit": limit},
+            headers={"Authorization": f"Bearer {token}"},
+            timeout=10.0
+        )
+        if response.status_code == 200:
+            data = response.json()
+            agent_token = data.get("token")
+            log.info(f"\n{Colors.GREEN}Success! Agent Token created.{Colors.RESET}")
+            log.info(f"\nSet this environment variable where your agent runs:\n")
+            log.info(f"{Colors.YELLOW}export SOVERGRID_AGENT_TOKEN={agent_token}{Colors.RESET}\n")
+            log.info(f"Keep this token secure. It is limited to ${limit}/mo and scope '{scope}'.")
+        else:
+            log.error(f"Failed to create agent token. [{response.status_code}]")
+            log.error(response.text)
+    except Exception as e:
+        log.error(f"Error communicating with SoverGrid API: {str(e)}")
+
 if __name__ == "__main__":
-    main()
+    cli()

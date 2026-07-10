@@ -25,7 +25,13 @@ CREDENTIALS_FILE = CREDENTIALS_DIR / "credentials.json"
 
 
 def _load_auth_headers() -> dict:
-    """Load JWT from ~/.sovergrid/credentials.json and return as Authorization header."""
+    """Load JWT from env or ~/.sovergrid/credentials.json and return as Authorization header."""
+    # Check for agent token first (e.g. from Claude Code / Cursor MCP)
+    agent_token = os.environ.get("SOVERGRID_AGENT_TOKEN")
+    if agent_token:
+        log.info("Using agent token from SOVERGRID_AGENT_TOKEN")
+        return {"Authorization": f"Bearer {agent_token}"}
+        
     if not CREDENTIALS_FILE.exists():
         log.error(
             f"{Colors.RED}Not authenticated.{Colors.RESET}\n"

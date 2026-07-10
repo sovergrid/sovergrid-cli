@@ -92,6 +92,7 @@ The SoverGrid Backend API is live on Railway at github.com/joel819/sovergrid-bac
 - [NEW] `sovergrid env set/list/unset` — manage environment variables on live deployments at no charge
 - [NEW] `sovergrid subscription status/list/history` — full subscription management from CLI
 - [NEW] Smart dependency scanner — scans `requirements.txt` / `package.json` on init and deploy, warns about missing environment variables for 40+ known SDKs (Stripe, OpenAI, PostgreSQL, Redis, etc.)
+- [NEW] `sovergrid agent create-token` — generates scoped, spend-limited tokens for AI agents (Cursor, Claude Code) to deploy on the developer's behalf
 
 **Backend API — Completed:**
 - [DONE] FastAPI backend deployed on Railway with JWT authentication
@@ -102,6 +103,9 @@ The SoverGrid Backend API is live on Railway at github.com/joel819/sovergrid-bac
 - [NEW] Subscription monitor — daily billing cron via `POST /subscriptions/billing-run`, auto-collects USDC via `transferFrom`, full grace period and suspension lifecycle
 - [NEW] `GET /pricing` public endpoint — CLI reads live pricing before showing cost to user
 - [NEW] Demo/production toggle — single `DEMO_MODE` env var switches between simulated billing and live blockchain calls
+- [NEW] Agent MCP Auth Firewall — strictly enforces monthly spend limits and scopes for AI agents deploying via the CLI
+- [NEW] Ramp Webhook Integration — secure ECDSA-verified fiat on-ramp processing
+- [NEW] 4EVERLAND API Integration — 100% free static site hosting automatically bypassing the $5 service fee
 
 **Current status:** All payment and subscription logic is complete and deployed. In `DEMO_MODE=True` (current), no real blockchain calls fire. Flipping `DEMO_MODE=False` and funding the treasury activates real USDC collection. The Akash real API integration (Milestone 1) is the remaining primary code item.
 
