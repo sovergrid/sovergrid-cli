@@ -85,7 +85,7 @@ sovergrid deploy
 
 ### 5. Launch Your Own Token (Optional)
 
-If your project needs its own cryptocurrency or governance token, SoverGrid can deploy a standard ERC-20 contract for you directly from the CLI. No Solidity knowledge required.
+If your project needs its own cryptocurrency or governance token, SoverGrid can deploy a standard smart contract for you directly from the CLI across multiple ecosystems (EVM and Solana). No Solidity or Rust knowledge required.
 
 ```bash
 sovergrid token
@@ -93,10 +93,11 @@ sovergrid token
 #   Token Name:   My Project Token
 #   Token Symbol: MPT
 #   Total Supply: 1000000
-#   Network:      sepolia (testnet) or mainnet
+#   Network:      solana-devnet, base, ethereum, polygon
+#   Standard:     spl-2022, spl, erc20
 ```
 
-Once deployed, you will receive a contract address. Add it to your `sovergrid.yaml` under `token.contract_address` and your live website can connect to it automatically.
+Once deployed, you will receive a contract or mint address. Add it to your `sovergrid.yaml` under `token.contract_address` and your live website can connect to it automatically.
 
 ## Commands
 
@@ -338,22 +339,22 @@ sovergrid train --model ./train.py --gpu A100 --hours 10
 
 ---
 
-### Service 6 — Token Deployment (ERC-20 Smart Contract)
+### Service 6 — Token Deployment (Smart Contract)
 
-**Provider:** Ethereum / Base / Polygon (your choice)
+**Provider:** Solana / Ethereum / Base / Polygon (your choice)
 **Payment model:** One-time flat fee — no monthly charge
 
 | Fee | Amount | What it covers |
 |-----|--------|---------------|
 | Deployment fee | **$20 USDC** | Smart contract compilation, deployment, verification |
 
-**How it works:** SoverGrid deploys a standard ERC-20 token contract on your chosen network. The contract is verified on-chain and ownership is transferred to your wallet immediately. You pay once and the token lives on the blockchain forever.
+**How it works:** SoverGrid deploys a standard token contract (ERC-20, SPL, or Token-2022) on your chosen network. The contract is verified on-chain and ownership/mint authorities are transferred to your wallet immediately. You pay once and the token lives on the blockchain forever.
 
-**Your cost (provider side):** $2–5 in gas fees on Base network
-**Your margin:** ~$15–18 per token deployed
+**Your cost (provider side):** Gas fees based on network (e.g. ~$0.01 on Solana, ~$3.00 on Base)
+**Your margin:** ~$17–19 per token deployed
 
 ```bash
-sovergrid token deploy   --name "MyToken"   --symbol "MTK"   --supply 1000000   --network base
+sovergrid token --name "SolToken" --symbol "SOLT" --supply 1000000 --network solana-devnet --standard spl-2022
 ```
 
 ---
