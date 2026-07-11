@@ -682,20 +682,23 @@ def cdn(config):
 @click.option("--name", prompt="Token Name", help="Full name of your token (e.g. My Project Token).")
 @click.option("--symbol", prompt="Token Symbol", help="Ticker symbol (e.g. MPT). Max 8 characters.")
 @click.option("--supply", prompt="Total Supply", type=int, help="Total token supply (e.g. 1000000).")
-@click.option("--network", default="sepolia", help="Blockchain network: 'sepolia' (testnet) or 'mainnet'.")
-def token(name, symbol, supply, network):
+@click.option("--network", default="sepolia", help="Blockchain network: 'base', 'ethereum', 'polygon', 'solana-devnet', etc.")
+@click.option("--standard", default="erc20", help="Token standard: 'erc20', 'spl', 'spl-2022'.")
+@click.option("--decimals", type=int, default=None, help="Token decimals (defaults to 18 for EVM, 9 for Solana).")
+@click.option("--mint-authority/--no-mint-authority", default=True, help="Allow future minting (Solana only).")
+@click.option("--freeze-authority/--no-freeze-authority", default=False, help="Allow account freezing (Solana only).")
+def token(name, symbol, supply, network, standard, decimals, mint_authority, freeze_authority):
     """
-    Deploy your own ERC-20 token to the blockchain.
+    Deploy a token to the blockchain (EVM or Solana).
 
-    This command compiles and deploys a standard ERC-20 smart contract
-    with your custom name, symbol, and supply. The token is minted
-    directly to your wallet address.
+    This command configures and deploys a custom token (ERC-20, SPL, or Token-2022).
+    The token is minted directly to your wallet address.
 
     Example:
-        sovergrid token --name "My Token" --symbol MTK --supply 1000000
+        sovergrid token --name "My Token" --symbol MTK --supply 1000000 --standard spl-2022 --network solana-devnet
     """
     log.info(f"{Colors.BOLD}SoverGrid CLI v{__version__}{Colors.RESET}")
-    log.info(f"Launching token: {Colors.CYAN}{name} ({symbol}){Colors.RESET}\n")
+    log.info(f"Launching {standard.upper()} token: {Colors.CYAN}{name} ({symbol}){Colors.RESET}\n")
     _print_beta_notice("Token Launch")
 
     service = TokenService(
@@ -703,6 +706,10 @@ def token(name, symbol, supply, network):
         token_symbol=symbol,
         token_supply=supply,
         network=network,
+        standard=standard,
+        decimals=decimals,
+        mint_authority=mint_authority,
+        freeze_authority=freeze_authority,
     )
     result = asyncio.run(service.deploy())
 
