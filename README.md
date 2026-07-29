@@ -12,7 +12,7 @@ Traditional cloud platforms (AWS, Railway, Vercel) can shut down your server, sp
 
 **For Web2 Developers:** You don't need to learn blockchain. Write your normal Python or Node.js app, and SoverGrid handles the rest. It auto-generates Dockerfiles, calculates costs, and deploys to the cheapest available decentralized network.
 
-**For Web3 Builders:** Payments are verified on-chain. Every transaction is transparent. SoverGrid relies on a single, uncompromising pricing rule across all services: **Customer Pays = Provider Cost (100% passthrough) + $5 SoverGrid Fee**. You only pay for the raw infrastructure cost plus our flat fee. No hidden markups. Static sites even have the $5 fee waived. SoverGrid never holds your funds.
+**For Web3 Builders:** Payments are verified on-chain. Every transaction is transparent. SoverGrid relies on a single, uncompromising pricing rule across all services: **Customer Pays = Provider Cost (100% passthrough) + $5 SoverGrid Fee**. You only pay for the raw infrastructure cost plus our flat fee. No hidden markups. Static sites even have the $5 fee waived.
 
 ## Current Status (Beta Phase 1 - Live Demo)
 
@@ -22,10 +22,9 @@ SoverGrid is currently in **Beta Phase 1**, designed specifically as a working p
 
 **What is currently working 100% (The Financial Plumbing):**
 - **Transparent Pricing Engine:** Developers pay exactly the raw provider cost plus a flat $5 SoverGrid fee for their deployments. No hidden markup percentages, no setup fees, and static sites have the $5 fee waived completely.
-- **Web3 Payment Routing:** When a developer runs `sovergrid deploy`, the CLI securely connects to the blockchain, signs a transaction with their private key, and pays using USDC from their own wallet.
-- **Fiat On-Ramping:** Don't have crypto? Developers can fund their workspace directly with a credit card via our Ramp integration. The deposit is converted to USDC behind the scenes and split automatically—routing the raw infrastructure cost to the provider and the $5 fee to the SoverGrid treasury.
+- **Card-to-Crypto On-Ramping:** Developers pay with a standard credit or debit card via our Ramp integration. The payment is converted to USDC and routed through SoverGrid's secured multisig treasury wallet, which automatically forwards the provider cost to the correct decentralized network and retains the SoverGrid service fee. Funds pass through the treasury in transit — this is how SoverGrid ensures payments land on the right networks without requiring you to manage crypto wallets.
 - **Smart Contract Automated Routing:** The Payment Router smart contract automatically directs the infrastructure cost to the provider and routes the SoverGrid service margin to the protocol treasury.
-- **Subscription Billing Engine:** Monthly compute subscriptions are automatically collected on the billing date via `transferFrom` on-chain — no manual invoices, no failed payments going unnoticed.
+- **Subscription Billing Engine:** Monthly compute subscriptions are automatically collected on the billing date — no manual invoices, no failed payments going unnoticed.
 - **Orchestration Logic:** The CLI parses `sovergrid.yaml`, calculates the exact cost for the requested services, and calls the SoverGrid backend API.
 
 **Infrastructure Provisioning:**
@@ -50,7 +49,7 @@ pip install sovergrid
 
 ### 2. Developer Authentication
 
-Before deploying, you need to create a developer account. This allows you to manage deployments and (in the future) fund your wallet directly.
+Before deploying, create a developer account to manage your deployments and payment method.
 
 ```bash
 # Register a new account
@@ -61,13 +60,15 @@ sovergrid register
 sovergrid login
 ```
 
-### 3. Get Testnet Funds (Beta Only)
+### 3. Add a Payment Method
 
-Since the CLI requires testnet USDC to deploy, you can instantly fund your wallet using the built-in faucet:
+SoverGrid accepts standard credit and debit cards — no crypto wallet required. After logging in, link your card via the Ramp widget in the SoverGrid dashboard. Your payment is converted to USDC and held in SoverGrid's secured treasury in transit, then automatically routed to the correct provider when you deploy.
 
-```bash
-sovergrid faucet
-```
+> **Testnet / Beta only:** During beta testing you can mint free testnet USDC to try the CLI without a real card:
+> ```bash
+> sovergrid faucet
+> ```
+> This command only works on testnet. It has no effect in production.
 
 ### 4. Deploy Your App
 
@@ -211,7 +212,7 @@ The scanner reads `requirements.txt`, `package.json`, `Pipfile`, and `pyproject.
 
 SoverGrid uses **different payment models for different services** because not every service has the same cost structure. A web app has predictable monthly costs. AI training is variable. A token deployment is a one-time action. Charging a flat price for all of them would either rip off users or lose you money.
 
-Every payment comes directly from the developer's wallet. SoverGrid never fronts compute costs. The developer's funds pay the provider. SoverGrid takes a transparent margin on every transaction.
+Every payment flows through SoverGrid's secured multisig treasury in transit. Developers pay by card or pre-funded USDC balance. The treasury automatically routes the provider cost to the correct decentralized network and retains the SoverGrid margin. SoverGrid takes a transparent margin on every transaction.
 
 ---
 
@@ -225,7 +226,7 @@ Every payment comes directly from the developer's wallet. SoverGrid never fronts
 | Deployment fee | **$5 USDC** | Container build, Akash lease setup, orchestration |
 | Monthly subscription | **$10 USDC/month** | Ongoing compute — 1 CPU, 512MB RAM, always-on |
 
-**How it works:** You pay $5 when you deploy. Your monthly $10 is automatically pulled from your wallet on the same date every month. If your wallet balance drops to zero, your app enters a 7-day grace period before being suspended.
+**How it works:** You pay $5 when you deploy (via card or USDC balance). Your monthly $10 is automatically billed on the same date every month. If payment fails, your app enters a 7-day grace period before being suspended.
 
 **Your cost (provider side):** ~$1.50/month on Akash
 **Your margin:** ~$8.50/month per app
@@ -253,7 +254,7 @@ compute:
 | Monthly (Growth) | **$12 USDC/month** | Up to 50GB stored on Filecoin |
 | Monthly (Scale) | **$30 USDC/month** | Up to 200GB stored on Filecoin |
 
-**How it works:** Files are pinned to IPFS and stored on Filecoin with redundancy. They are accessible via a permanent IPFS CID that never changes, even if SoverGrid goes offline.
+**How it works:** Files are pinned to IPFS and stored on Filecoin with redundancy. They are accessible via a permanent IPFS CID that never changes, even if SoverGrid goes offline. You pay via card or USDC balance — no blockchain knowledge required.
 
 **Your cost (provider side):** ~$0.40-1.50/month depending on tier
 **Your margin:** ~$4-10/month per storage subscriber
@@ -319,9 +320,9 @@ sovergrid cdn deploy ./dist
 
 **This is the most important one to understand.** AI training costs are variable. Someone can use 1 GPU hour or 10,000 GPU hours in a month. A flat subscription would mean SoverGrid either overcharges light users or loses money on heavy users.
 
-Instead, the developer pre-funds their SoverGridVault with USDC. Every GPU hour consumed pulls the dynamic hourly rate from their vault. When the vault runs low, they top it up. When the vault is empty, training pauses automatically.
+Instead, the developer pre-funds their SoverGridVault via card or USDC. Every GPU hour consumed pulls the dynamic hourly rate from their vault. When the vault runs low, they top it up. When the vault is empty, training pauses automatically.
 
-**You never front GPU costs.** The money is always in the developer's vault, not your pocket.
+**You never front GPU costs.** The money is always in the developer's vault before training begins.
 
 **Your cost (provider side):** ~$0.30/GPU hour on decentralized networks
 **Your margin:** ~$0.50/GPU hour
@@ -348,7 +349,7 @@ sovergrid train --model ./train.py --gpu A100 --hours 10
 |-----|--------|---------------|
 | Deployment fee | **$20 USDC** | Smart contract compilation, deployment, verification |
 
-**How it works:** SoverGrid deploys a standard token contract (ERC-20, SPL, or Token-2022) on your chosen network. The contract is verified on-chain and ownership/mint authorities are transferred to your wallet immediately. You pay once and the token lives on the blockchain forever.
+**How it works:** SoverGrid deploys a standard token contract (ERC-20, SPL, or Token-2022) on your chosen network. The contract is verified on-chain and ownership/mint authorities are transferred to your specified wallet address immediately. You pay the $20 fee once and the token lives on the blockchain forever.
 
 **Your cost (provider side):** Gas fees based on network (e.g. ~$0.01 on Solana, ~$3.00 on Base)
 **Your margin:** ~$17–19 per token deployed
@@ -440,13 +441,7 @@ The `env:` block works exactly like environment variables on Railway, Heroku, or
 
 > **Security note:** Never commit real API keys to your `sovergrid.yaml`. Use the `env:` block only for values you are comfortable having in your project config. For production secrets, use `sovergrid.yaml` to reference environment variable names and set the real values in your local `.env` file instead.
 
-## Cost Breakdown
 
-SoverGrid simplifies pricing with a unified, predictable model.
-
-| Component | Cost | Purpose |
-|-----------|------|---------|
-| Flat Deployment Fee | **$5.00 USDC** | Complete deployment onto the decentralized network. No hidden markup, no percentage fees. |
 
 ## Supported Stacks
 

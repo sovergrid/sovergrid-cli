@@ -53,7 +53,7 @@ SoverGrid is an open-source Python CLI that abstracts the full complexity of dep
 - Generates an optimized Dockerfile automatically
 - Submits the deployment to Akash with correct SDL configuration
 - Falls back to Spheron if Akash provider is unavailable
-- Handles all payment routing via smart contract in USDC (no AKT required from the developer)
+- Handles all payment routing through SoverGrid's secured multisig treasury — developer pays by card via Ramp, funds convert to USDC and are automatically forwarded to the correct provider
 - Returns a live URL in under 60 seconds
 
 ---
@@ -127,15 +127,16 @@ Specifically:
 
 ---
 
-### Milestone 2 — Web3 Payment Routing Layer ($2,500)
+### Milestone 2 — Payment Routing Layer ($2,500)
 **Deliverable:** Deploy USDC payment routing contract and subscription billing system to production.
 
 > **Progress Update (June 2026):** The subscription billing architecture is already complete in demo mode. The remaining work for this milestone is deploying the smart contracts to Base mainnet, funding the treasury, and switching `DEMO_MODE=False`.
 
 Specifically:
 - [DONE] USDC payment router architecture — routes infrastructure cost to provider, SoverGrid keeps the service margin
-- [DONE] Per-service pricing engine — compute $10/month, storage $5/month, AI training $0.80/GPU hour
-- [DONE] Subscription monitor — daily `transferFrom` billing via cron, grace period, suspension, termination lifecycle
+- [DONE] Per-service pricing engine — compute ($5 deploy + $10/month), storage ($2 setup + $5–30/month tiered), database ($3 setup + $8/month), CDN ($2 setup + $5/month), AI training ($0.80/GPU-hour metered from pre-funded vault), token deployment ($20 one-time)
+- [DONE] Subscription monitor — daily billing via cron, grace period, suspension, termination lifecycle
+- [DONE] Ramp fiat on-ramp — developer pays by card, payment converts to USDC, held in SoverGrid's secured multisig treasury in transit, then automatically routed to the correct provider. No crypto wallet management required from the developer.
 - [TODO] Deploy `SoverGridVault.sol` to Base mainnet
 - [TODO] Connect treasury private key and fund for gas
 - [TODO] Set `DEMO_MODE=False` in Railway
@@ -218,8 +219,9 @@ sovergrid deploy
 
 [OK] Calculating deployment cost...
   Services selected:  compute + storage
-  Deploy fee:         $7.00 USDC (one-time)
-  Monthly billing:    $15.00 USDC/month (auto-collected from vault)
+  Deploy fee:         $7.00 USDC one-time  ($5 compute + $2 storage setup)
+  Monthly billing:    $15.00 USDC/month    ($10 compute + $5 storage, auto-collected)
+  Payment method:     Card via Ramp → USDC → SoverGrid treasury → providers
 
 [OK] App live at: https://myapp.sovergrid.network
 [OK] Deployed on: Akash Network (EU-West)
